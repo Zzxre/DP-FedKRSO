@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+      "name": "fed_train_glue_RSO",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/fed_train_glue_RSO.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": [
+        "--task", "qnli",
+        "--device", "0",
+        "--batch_size", "32",
+        "--seed", "0",
+        "--lr", "2e-4",
+        "--agg_type", "rso",
+        "--interval", "10",
+        "--amp",
+        "--lora_r", "4",
+        "--alpha", "-1",
+        "--kseed", "10",
+        "--wandb",
+        "--dp",
+      ]
+    }
+    ]
+}
