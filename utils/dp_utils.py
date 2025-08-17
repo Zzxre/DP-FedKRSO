@@ -1,5 +1,9 @@
 import math
 from opacus.accountants.utils import get_noise_multiplier
+from opacus.grad_sample import GradSampleModule
+from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.nn as nn
+
 def compute_client_sigmas(loaders, args, accountant="gdp"):
     """Return a list sigma[i] for each client loader."""
     sigmas = []
@@ -19,3 +23,11 @@ def compute_client_sigmas(loaders, args, accountant="gdp"):
         )
         sigmas.append(sigma_i)
     return sigmas
+
+
+def unwrap_all(m):
+    if isinstance(m, GradSampleModule):
+        m = m._module
+    if isinstance(m, (DDP, nn.DataParallel)):
+        m = m.module
+    return m

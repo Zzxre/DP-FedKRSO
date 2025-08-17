@@ -8,6 +8,7 @@ from transformers import get_cosine_schedule_with_warmup
 from opacus import PrivacyEngine
 from opacus.utils.batch_memory_manager import BatchMemoryManager
 from optimizer import AdamW
+from utils.dp_utils import unwrap_all
 
 
 torch.set_printoptions(precision=4)
@@ -81,6 +82,7 @@ def train_client(model, dataloader, args):
                     total_loss += loss.item()
                     if step >= args.local_steps:
                         break
+            model = unwrap_all(model)
         else:
             for data in dataloader:
                 if args.amp:
