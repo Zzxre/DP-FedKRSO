@@ -101,9 +101,7 @@ def train_client(model, dataloader, args):
                 total_loss += loss.item()
                 if step >= args.local_steps:
                     break
-    if args.dp:
-        # Unwrap the model to get the original model
-        model = unwrap_all(model)
+    
     return model, total_loss/total_steps
 
 

@@ -10,7 +10,7 @@ from train_eval import *
 from data_utils import *
 from models import *
 from transformers import RobertaConfig, AutoModelForSequenceClassification
-from utils.dp_utils import compute_client_sigmas
+from utils.dp_utils import compute_client_sigmas, unwrap_all
 
 warnings.filterwarnings('ignore')
 
@@ -84,12 +84,13 @@ args.device = torch.device(f'cuda:{args.device}')
 
 
 def create_model(base_model, args):
+    model = deepcopy(base_model)
     if args.agg_type == 'normal':
-        client_model = create_peft_model(base_model, args)
+        client_model = create_peft_model(model, args)
     elif args.agg_type == "ffa":
-        client_model = create_peft_FFA_model(base_model, args)
+        client_model = create_peft_FFA_model(model, args)
     else:
-        client_model = create_RSO_model(base_model, args)
+        client_model = create_RSO_model(model, args)
     return client_model
 
 
@@ -155,6 +156,12 @@ def federated_learning(task):
                     args.noise_multiplier = noise_multipliers[i]
                 ###
                 client_model, loss = train_client(client_model, client_dataloaders[i], args)
+                ###zzx
+                if args.dp:
+                    # Unwrap the model to get the original model
+                    client_model = unwrap_all(client_model)
+                    # base_model = unwrap_all(base_model)
+                ###
                 train_loss += loss
                 if args.agg_type == 'rso':
                     client_models.append(deepcopy(client_model.merge_and_unload().state_dict()))
